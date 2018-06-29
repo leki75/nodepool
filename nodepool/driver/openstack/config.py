@@ -126,6 +126,7 @@ class ProviderPool(ConfigPool):
         self.security_groups = None
         self.auto_floating_ip = True
         self.host_key_checking = True
+        self.use_private_ip = False
         self.labels = None
         # The OpenStackProviderConfig object that owns this pool.
         self.provider = None
@@ -146,6 +147,7 @@ class ProviderPool(ConfigPool):
                     other.security_groups == self.security_groups and
                     other.auto_floating_ip == self.auto_floating_ip and
                     other.host_key_checking == self.host_key_checking and
+                    other.use_private_ip == self.use_private_ip and
                     other.labels == self.labels)
         return False
 
@@ -277,6 +279,7 @@ class OpenStackProviderConfig(ProviderConfig):
             pp.security_groups = pool.get('security-groups', [])
             pp.auto_floating_ip = bool(pool.get('auto-floating-ip', True))
             pp.host_key_checking = bool(pool.get('host-key-checking', True))
+            pp.use_private_ip = bool(pool.get('use-private-ip', False))
 
             for label in pool.get('labels', []):
                 pl = ProviderLabel()
@@ -361,6 +364,7 @@ class OpenStackProviderConfig(ProviderConfig):
             'networks': [str],
             'auto-floating-ip': bool,
             'host-key-checking': bool,
+            'use-private-ip': bool,
             'max-cores': int,
             'max-servers': int,
             'max-ram': int,

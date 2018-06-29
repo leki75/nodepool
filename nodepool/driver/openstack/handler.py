@@ -159,13 +159,20 @@ class OpenStackNodeLauncher(NodeLauncher):
         if not self.node.az:
             self.node.az = server.location.zone
 
-        interface_ip = server.interface_ip
+        # Use private_ipv4 on clouds where no public IP is configured.
+        if self.pool.use_private_ip:
+            interface_ip = server.private_ipv4
+            interface_type = 'private'
+        else:
+            interface_ip = server.interface_ip
+            interface_type = 'public'
+
         if not interface_ip:
             self.log.debug(
                 "Server data for failed IP: %s" % pprint.pformat(
                     server))
             raise exceptions.LaunchNetworkException(
-                "Unable to find public IP of server")
+                "Unable to find %s IP of server" % (interface_type))
 
         self.node.interface_ip = interface_ip
         self.node.public_ipv4 = server.public_v4
